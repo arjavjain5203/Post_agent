@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+sqlalchemy
+aiomysql
+python-dotenv
+pandas
+openpyxl
+cryptography
+python-multipart
+apscheduler
+httpx
+# email-validator # often needed for Pydantic EmailStr
