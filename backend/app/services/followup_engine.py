@@ -5,7 +5,10 @@ from sqlalchemy.orm import joinedload
 
 from backend.app.core.database import SessionLocal
 from backend.app.models.base import Investment, Customer, FollowupLog, Agent
-from backend.app.services import whatsapp_service
+from backend.app.services.sms import sms_service
+
+# ... (imports)
+
 from backend.app.schemas.investment import StageEnum, InvestmentStatus
 from backend.app.core.security import decrypt_field
 
@@ -104,11 +107,24 @@ async def check_daily_followups():
                     str(days_diff) if days_diff >= 0 else "Overdue"
                 ]
                 
-                await whatsapp_service.send_whatsapp_template(
-                    to_mobile=agent.mobile,
-                    template_name="investment_maturity_alert", # Hypothetical template
-                    params=params
-                )
+                # Notify Agent via SMS
+                days_msg = f"{days_diff} days" if days_diff > 0 else "TODAY" if days_diff == 0 else f"{abs(days_diff)} days ago"
+                
+                status_label = "Matures"
+                if days_diff < 0:
+                    status_label = "Matured"
+                
+                sms_body = f"Reminder: Investment for {cust_name} ({investment.scheme_type}) {status_label} in {days_msg}. Amt: Rs. {investment.principal}"
+                
+                # Use send_sms directly for flexibility
+                sms_service.send_sms(agent.mobile, sms_body)
+
+                # WhatsApp - Commenting out as we are focusing on SMS
+                # await whatsapp_service.send_whatsapp_template(
+                #     to_mobile=agent.mobile,
+                #     template_name="investment_maturity_alert",
+                #     params=params
+                # )
                 
                 # Log it
                 log = FollowupLog(

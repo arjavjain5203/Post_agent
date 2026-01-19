@@ -16,9 +16,11 @@ router = APIRouter()
 
 @router.post("/signup", response_model=None)
 async def signup(agent_in: AgentCreate, db: AsyncSession = Depends(get_db)):
+    print(f"DEBUG: Signup request received for {agent_in.mobile}")
     # Check if agent exists
     result = await db.execute(select(Agent).where(Agent.mobile == agent_in.mobile))
     agent = result.scalars().first()
+    print(f"DEBUG: Agent found in DB: {agent}")
     if agent:
         raise HTTPException(
             status_code=400,
