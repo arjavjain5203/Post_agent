@@ -27,18 +27,20 @@ async def create_investment(
 
 @router.get("/", response_model=List[InvestmentResponse])
 async def read_investments(
+    customer_id: str = None,
     current_agent: Agent = Depends(deps.get_current_agent),
     db: AsyncSession = Depends(get_db)
 ):
-    # TODO: this needs to filter by agent's customers investments only
-    # Getting all investments and filtering in code is inefficient but works for now
-    # Ideally do a JOIN in service
-    # For MVP, let's implement a service method `list_agent_investments` if we had time.
-    # Reusing list_investments but we need to ensure security.
-    # Current list_investments gets ALL. That is unsafe.
-    pass
-    # Let's fix this inline or add to service.
-    # Adding inline logic:
+    # If customer_id provided, fetch only for that customer (after verifying ownership)
+    if customer_id:
+        customer = await customer_service.get_customer_by_id(db, customer_id)
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        if customer.agent_id != current_agent.agent_id:
+            raise HTTPException(status_code=400, detail="Not enough permissions")
+            
+        return await investment_service.list_investments(db, customer_id=customer_id)
+
     # Get all customers of agent
     customers = await customer_service.list_agent_customers(db, current_agent.agent_id)
     customer_ids = [c.customer_id for c in customers]

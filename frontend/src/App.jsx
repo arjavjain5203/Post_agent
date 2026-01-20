@@ -8,6 +8,7 @@ import DashboardLayout from './components/DashboardLayout';
 import Dashboard from './pages/Dashboard/Dashboard';
 import CustomerList from './pages/Customers/CustomerList';
 import AddCustomer from './pages/Customers/AddCustomer';
+import CustomerDetails from './pages/Customers/CustomerDetails';
 import InvestmentList from './pages/Investments/InvestmentList';
 import AddInvestment from './pages/Investments/AddInvestment';
 import BulkUpload from './pages/BulkUpload';
@@ -38,6 +39,7 @@ function App() {
 
                 <Route path="/customers" element={<CustomerList />} />
                 <Route path="/customers/add" element={<AddCustomer />} />
+                <Route path="/customers/:id" element={<CustomerDetails />} />
 
                 <Route path="/investments" element={<InvestmentList />} />
                 <Route path="/investments/add" element={<AddInvestment />} />

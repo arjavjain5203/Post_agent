@@ -107,6 +107,17 @@ async def check_daily_followups():
                     str(days_diff) if days_diff >= 0 else "Overdue"
                 ]
                 
+                # Decrypt customer mobile
+                cust_mobile = "Unspecified"
+                try:
+                    mobile_val = customer.mobile
+                    if isinstance(mobile_val, bytes):
+                        mobile_val = mobile_val.decode('utf-8')
+                    if mobile_val:
+                         cust_mobile = decrypt_field(mobile_val)
+                except Exception as e:
+                    print(f"Error decrypting mobile: {e}")
+
                 # Notify Agent via SMS
                 days_msg = f"{days_diff} days" if days_diff > 0 else "TODAY" if days_diff == 0 else f"{abs(days_diff)} days ago"
                 
@@ -114,7 +125,7 @@ async def check_daily_followups():
                 if days_diff < 0:
                     status_label = "Matured"
                 
-                sms_body = f"Reminder: Investment for {cust_name} ({investment.scheme_type}) {status_label} in {days_msg}. Amt: Rs. {investment.principal}"
+                sms_body = f"Reminder: Investment for {cust_name} ({cust_mobile}) ({investment.scheme_type}) {status_label} in {days_msg}. Amt: Rs. {investment.principal}"
                 
                 # Use send_sms directly for flexibility
                 sms_service.send_sms(agent.mobile, sms_body)

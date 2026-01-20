@@ -110,9 +110,9 @@ export default function CustomerList() {
                                                     {new Date(customer.created_at).toLocaleDateString()}
                                                 </td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                    <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                                    <Link to={`/customers/${customer.customer_id}`} className="text-indigo-600 hover:text-indigo-900">
                                                         View<span className="sr-only">, {customer.full_name}</span>
-                                                    </a>
+                                                    </Link>
                                                 </td>
                                             </tr>
                                         ))
